@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8">
+    <title>Maps - We for She</title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css?family=Playfair+Display:700" rel="stylesheet">
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 90%;
+        width: 95%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+    <script>
+      // This example requires the Places library. Include the libraries=places
+      // parameter when you first load the API. For example:
+      // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
+
+      var map;
+      var infoWindow;
+      var service;
+
+      function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: 43.4722864599, lng: -80.5448593411},
+          zoom: 13,
+          styles: [{
+            stylers: [{ visibility: 'simplified' }]
+          }, {
+            elementType: 'labels',
+            stylers: [{ visibility: 'off' }]
+          }]
+        });
+
+        infoWindow = new google.maps.InfoWindow();
+        service = new google.maps.places.PlacesService(map);
+
+        // The idle event is a debounced event, so we can query & listen without
+        // throwing too many requests at the server.
+        map.addListener('idle', performSearch);
+
+
+        // Try HTML5 geolocation.
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            var pos = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+
+            infoWindow.setPosition(pos);
+            infoWindow.setContent('Location found.');
+            map.setCenter(pos);
+          }, function() {
+            handleLocationError(true, infoWindow, map.getCenter());
+          });
+        } else {
+          // Browser doesn't support Geolocation
+          handleLocationError(false, infoWindow, map.getCenter());
+        }
+
+      }
+
+      function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+        infoWindow.setPosition(pos);
+        infoWindow.setContent(browserHasGeolocation ?
+                              'Error: The Geolocation service failed.' :
+                              'Error: Your browser doesn\'t support geolocation.');
+      }
+
+      function performSearch() {
+        var request = {
+          bounds: map.getBounds(),
+          keyword: 'women'
+        };
+        service.radarSearch(request, callback);
+
+        var request3 = {
+          bounds: map.getBounds(),
+          keyword: 'female'
+        };
+        service.radarSearch(request3, callback);
+
+        var request4 = {
+          bounds: map.getBounds(),
+          keyword: 'heforshe'
+        };
+        service.radarSearch(request4, callback);
+      }
+
+      function callback(results, status) {
+        if (status !== google.maps.places.PlacesServiceStatus.OK) {
+          console.error(status);
+          return;
+        }
+        for (var i = 0, result; result = results[i]; i++) {
+          addMarker(result);
+        }
+      }
+
+      function addMarker(place) {
+        var marker = new google.maps.Marker({
+          map: map,
+          position: place.geometry.location,
+          icon: {
+            url: 'https://developers.google.com/maps/documentation/javascript/images/circle.png',
+            anchor: new google.maps.Point(10, 10),
+            scaledSize: new google.maps.Size(10, 17)
+          }
+        });
+
+        google.maps.event.addListener(marker, 'click', function() {
+          service.getDetails(place, function(result, status) {
+            if (status !== google.maps.places.PlacesServiceStatus.OK) {
+              console.error(status);
+              return;
+            }
+            infoWindow.setContent(result.name + '<br>' + '<strong>' + result.vicinity + '</strong>');
+            infoWindow.open(map, marker);
+          });
+        });
+      }
+    </script>
+  </head>
+<body>
+<!-- head -->
+<div class="container-fluid">
+    <div class="row bgimgup">
+        <div class="col-md-2">
+            <img src="img/logo.PNG" id="logo">
+        </div>
+        <div class="col-md-7">
+            <h1 id="title2"><big><strong><big><big>He <em><font color="#a95bad"">for</font> </em>She</big></big></strong></big></h1>
+            <h2 id="title3"><big><big><strong><big><big>We  <em><font color="blue">for</em> </font></big> </strong></big></big></big></h2>
+        </div>
+        <div class="col-md-3">
+            <img src="img/background.png" alt="this is a big picture" id="banner">
+        </div>
+    </div>
+</div>
+<!-- head over -->
+<!-- navigator -->
+<div id="btbar" class="text-center container-fluid">
+        <div class="row">
+            <!-- HTML for SEARCH BAR -->
+            <a href="index.html"><div class="buttons" style="width:12%"><big>Home</big></div></a>
+            <a href="facts.html"><div class="buttons" style="width:12%"><big>Facts</big></div></a>
+            <a href="biases.html"><div class="buttons" style="width:12%"><big>Biases</big></div></a>
+            <a href="stem.html"><div class="buttons" style="width:12%"><big>STEM</big></div></a>
+            <a href="about_us.html"><div class="buttons" style="width:12%"><big>About us</big></div></a>
+            <a href="maps.html"><div class="buttons" style="width:12%"><big>E-Map</big></div></a>
+                        <!-- HTML for SEARCH BAR -->
+            <form class="myform" action="https://www.google.ca/search?" method="get">
+                    <div class="myformcont">
+                        <input name="q" value="                                                                                      site:weforshe.ga" type="text" placeholder="Go for it" required style="width:60%">
+                        <button class="btncol" type="submit" value="Search" style="width:30%">Search</button>
+                    </div>
+                </form>
+        </div>
+    </div>
+<!-- navigator ends -->
+
+
+<div id="map" class="map"></div>
+<div class="container">
+      <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBXKQI9CEjYo2d0B8aJvgzUISUUTq9LXIE
+&callback=initMap&libraries=places,visualization" async defer></script>
+</div>
+
+<!-- footer starts -->
+
+<hr>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12" id="footer">
+            Designed by Tong Linzhe, Yao Yuwei, Guo Haowei, Wang Zihao.
+        </div>
+    </div>
+</div>
+
+<!-- footer ends -->
+
+  </body>
+</html>
